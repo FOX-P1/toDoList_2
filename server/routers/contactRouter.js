@@ -19,12 +19,13 @@ contactRouter.get("/", auth, async (req, res) => {
 });
 
 contactRouter.post("/", auth, async (req, res) => {
-    const { _id } = req.user;
+    const userId = req.user._id;
+    const { phoneNumber, name } = req.body;
     try {
         const newContact = await Contact.create({
-            name: req.body.name,
-            phoneNumber: req.body.phoneNumber,
-            userId: req.user._id,
+            name,
+            phoneNumber,
+            userId,
         });
     } catch (error) {
         return res.status(400).json({

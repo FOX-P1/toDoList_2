@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import ContactItem from "./ContactItem";
 
 function ContactPage() {
     const [contacts, setContacts] = useState(null);
@@ -20,6 +21,15 @@ function ContactPage() {
 
     const [phoneNumber, setPhoneNumber] = useState("");
     const [name, setName] = useState("");
+
+    const onNewPhoneNumber = (event) => {
+        const phoneNumber = event.target.value;
+        setPhoneNumber(phoneNumber);
+    };
+    const onNewName = (event) => {
+        const name = event.target.value;
+        setName(name);
+    };
 
     const onChangePhoneNumber = (event) => {
         const phoneNumber = event.target.value;
@@ -74,49 +84,26 @@ function ContactPage() {
             }}>
             <h1>연락처</h1>
             <form
-                const
                 onSubmit={onSubmit}
                 style={{
                     display: "flex",
                     flexDirection: "row",
                 }}>
                 <div>
-                    <input placeholder="이름" defaultValue={name} onChange={onChangeName} />
+                    <input placeholder="이름" defaultValue={name} onChange={onNewName} />
                 </div>
                 <div>
                     <input
                         placeholder="전화번호"
                         defaultValue={phoneNumber}
-                        onChange={onChangePhoneNumber}
+                        onChange={onNewPhoneNumber}
                     />
                 </div>
                 <button type="submit">저장</button>
             </form>
             <div>
                 {contacts.map((contact) => (
-                    <div
-                        key={contact._id}
-                        style={{
-                            display: "flex",
-                            justifyContent: "space-between",
-                            width: "300px",
-                        }}>
-                        <div
-                            style={{
-                                width: "150px",
-                            }}>
-                            {contact.name}
-                        </div>
-                        <div
-                            style={{
-                                width: "150px",
-                            }}>
-                            {contact.phoneNumber}
-                        </div>
-                        <button onClick={() => onDelete(contact._id)}>😵</button>
-                        {/* <input type="text" placeholder={contact.name} />
-                        <input type="text" placeholder={contact.phoneNumber} /> */}
-                    </div>
+                    <ContactItem key={contact._id} contact={contact} onDelete={onDelete} />
                 ))}
             </div>
         </div>
