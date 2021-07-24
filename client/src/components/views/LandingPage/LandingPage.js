@@ -2,10 +2,10 @@ import React, { useEffect } from "react";
 import axios from "axios";
 import { withRouter } from "react-router-dom";
 
-function LandingPage(props) {
-    useEffect(() => {
-        axios.get("/api/hello").then((response) => console.log(response.data));
-    }, []);
+function LandingPage() {
+    // useEffect(() => {
+    //     axios.get("/api/hello").then((response) => console.log(response.data));
+    // }, []);
 
     // const onClickHandler2 = async () => {
     //     const response = await axios.get(`/api/users/logout`);

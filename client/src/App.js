@@ -5,6 +5,7 @@ import LandingPage from "./components/views/LandingPage/LandingPage";
 import LoginPage from "./components/views/LoginPage/LoginPage";
 import RegisterPage from "./components/views/RegisterPage/RegisterPage";
 import TodoPage from "./components/views/TodoPage/TodoPage";
+import ContactPage from "./components/views/ContactPage/ContactPage";
 import Auth from "./hoc/auth";
 import NavBar from "./components/views/NavBar/NavBar";
 
@@ -30,13 +31,14 @@ function App() {
             you have multiple routes, but you want   only one
             of them to render at a time
           */}
-                <Route exact path={["/", "/todo"]} component={Auth(NavBar, true)} />
+                <Route exact path={["/", "/todo", "/contact"]} component={Auth(NavBar, true)} />
 
                 <Switch>
                     <Route exact path="/" component={Auth(LandingPage, true)} />
                     <Route path="/login" component={Auth(LoginPage, false)} />
                     <Route path="/register" component={Auth(RegisterPage, false)} />
                     <Route path="/todo" component={Auth(TodoPage, true)} />
+                    <Route path="/contact" component={Auth(ContactPage, true)} />
                 </Switch>
             </div>
         </Router>

@@ -34,8 +34,6 @@ function LoginPage(props) {
         });
     };
 
-    console.log(props);
-
     return (
         <div
             style={{

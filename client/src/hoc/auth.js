@@ -11,9 +11,6 @@ export default function foo(SpecificComponent, option, adminRoute = null) {
         const dispatch = useDispatch();
         useEffect(() => {
             dispatch(auth()).then((response) => {
-                console.log("response data", response);
-                console.log("optoin: ", option);
-
                 //로그인 하지 않은 상태
                 if (!response.payload.isAuth) {
                     if (option) {

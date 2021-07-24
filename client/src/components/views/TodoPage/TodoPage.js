@@ -1,19 +1,55 @@
-import React, { useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { withRouter, Link } from "react-router-dom";
+import TodoList from "./TodoList";
 
-function TodoPage(props) {
+function TodoPage() {
+    const [todos, setTodos] = useState(null);
+    const [loading, setLoading] = useState(false);
+    const getTodos = async () => {
+        setLoading(true);
+        try {
+            const response = await axios.get("/api/todos");
+            console.log(response.data.todos);
+            setTodos(response.data.todos);
+        } catch (e) {
+            console.log(e);
+        }
+        setLoading(false);
+    };
     useEffect(() => {
-        axios.get("/api/todos").then((response) => console.log(response.data));
+        getTodos();
     }, []);
 
-    // const onClickHandler2 = async () => {
-    //     const response = await axios.get(`/api/users/logout`);
-    //     console.log(response.data);
-    // };
+    const [value, setValue] = useState("");
+    const onChange = (event) => {
+        const { value } = event.target;
+        setValue(value);
+    };
+    const onSubmit = async (event) => {
+        event.preventDefault();
+        const payload = {
+            todoThing: value,
+        };
+
+        const response = await axios.post("/api/todos", payload);
+        if (response.data.success) {
+            alert("데이터 저장에 성공했습니다.");
+            getTodos();
+        } else {
+            alert("실패");
+        }
+    };
+
+    if (loading) {
+        return <form>대기 중...</form>;
+    }
+    if (!todos) {
+        return null;
+    }
 
     return (
-        <form
+        <div
             style={{
                 display: "flex",
                 flexDirection: "column",
@@ -22,27 +58,16 @@ function TodoPage(props) {
                 width: "100%",
                 height: "100vh",
             }}>
-            <h1>할일 목록</h1>
+            <h1>ToDo List</h1>
+            <form className="TodoInsert" onSubmit={onSubmit}>
+                <input placeholder="할 일을 입력하세요" value={value} onChange={onChange} />
+                <button type="submit">제출</button>
+            </form>
             <div>
-                <input type="text" placeholder="할일을 적으세요" />
-                <input type="submit" Value="add todo" />
+                <TodoList todos={todos} onRefresh={getTodos} />
+                {/* <input type="text" placeholder={todo.todoThing} /> */}
             </div>
-            <div>
-                <input type="checkbox"></input>
-                <span>밥먹기</span>
-                <button>수정하기</button>
-            </div>
-            <div>
-                <input type="checkbox"></input>
-                <span>화장실가기</span>
-                <button>수정하기</button>
-            </div>
-            <div>
-                <input type="checkbox"></input>
-                <span>노래하기</span>
-                <button>수정하기</button>
-            </div>
-        </form>
+        </div>
     );
 }
 

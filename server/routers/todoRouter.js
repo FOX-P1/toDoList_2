@@ -7,7 +7,6 @@ const todoRouter = express.Router();
 todoRouter.get("/", auth, async (req, res) => {
     const userId = req.user._id;
     const todos = await Todo.find({ userId });
-    console.log(todos);
     if (!todos) {
         return res.status(404).json({
             success: false,
@@ -20,10 +19,7 @@ todoRouter.get("/", auth, async (req, res) => {
 });
 
 todoRouter.post("/", auth, async (req, res) => {
-    console.log(req.user);
-    console.log(req.body.todoThing);
     const { _id } = req.user;
-    console.log(_id);
     try {
         const newTodo = await Todo.create({
             todoThing: req.body.todoThing,
@@ -48,7 +44,6 @@ todoRouter.patch("/:id([0-9a-f]{24})", auth, async (req, res) => {
     const todo = await Todo.findByIdAndUpdate(id, {
         todoThing: req.body.todoThing,
     });
-    console.log(todo);
     if (!todo) {
         return res.status(400).json({
             success: false,
@@ -62,8 +57,6 @@ todoRouter.patch("/:id([0-9a-f]{24})", auth, async (req, res) => {
 
 todoRouter.patch("/:id([0-9a-f]{24})/check", auth, async (req, res) => {
     const id = req.params.id;
-    console.log(req.params);
-    console.log(id);
     const todo = await Todo.findByIdAndUpdate(id, {
         check: "checked",
     });
@@ -73,7 +66,6 @@ todoRouter.patch("/:id([0-9a-f]{24})/check", auth, async (req, res) => {
     // }
     // todo.check = "unchecked";
     // return todo.save();
-    console.log(todo);
     if (!todo) {
         return res.status(400).json({
             success: false,
