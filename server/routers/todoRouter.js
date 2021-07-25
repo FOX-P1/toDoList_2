@@ -6,37 +6,43 @@ const todoRouter = express.Router();
 
 todoRouter.get("/", auth, async (req, res) => {
     const userId = req.user._id;
-    const todos = await Todo.find({ userId });
-    if (!todos) {
-        return res.status(404).json({
+    try {
+        const todos = await Todo.find({ userId });
+        if (!todos) {
+            return res.status(404).json({
+                success: false,
+            });
+        }
+        return res.status(200).json({
+            success: true,
+            todos,
+        });
+    } catch (error) {
+        return res.status(500).json({
             success: false,
+            message: "DB Server에 접속할 수 없습니다.",
         });
     }
-    return res.status(200).json({
-        success: true,
-        todos: todos,
-    });
 });
 
 todoRouter.post("/", auth, async (req, res) => {
     const { _id } = req.user;
+    const { todoThing } = req.body;
     try {
-        const newTodo = await Todo.create({
-            todoThing: req.body.todoThing,
-            userId: req.user._id,
+        const todo = await Todo.create({
+            todoThing,
+            userId: _id,
         });
-        // const user = await User.findById({ _id });
-        // console.log(user.todos);
-        // user.todos.push(newTodo._id);
+        return res.status(200).json({
+            success: true,
+            todo,
+        });
     } catch (error) {
-        return res.status(400).json({
+        return res.status(500).json({
             success: false,
             message: "업로드에 실패하였습니다.",
         });
     }
-    return res.status(200).json({
-        success: true,
-    });
 });
 
 todoRouter.patch("/:id([0-9a-f]{24})", auth, async (req, res) => {
@@ -57,15 +63,42 @@ todoRouter.patch("/:id([0-9a-f]{24})", auth, async (req, res) => {
 
 todoRouter.patch("/:id([0-9a-f]{24})/check", auth, async (req, res) => {
     const id = req.params.id;
-    const todo = await Todo.findByIdAndUpdate(id, {
-        check: "checked",
-    });
+    const { check } = req.body;
+
+    try {
+        const todo = await Todo.findByIdAndUpdate(
+            id,
+            {
+                check,
+            },
+            { new: true }
+        );
+        if (!todo) {
+            return res.status(404).json({
+                success: false,
+            });
+        }
+        return res.status(200).json({
+            success: true,
+            todo: todo,
+        });
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            success: false,
+            message: "서버 에러",
+        });
+    }
+    // const todo = await Todo.findByIdAndUpdate(id, {
+    //     todo) => todo._id === id ? {...todo, check: ! todo.check } : todo
+    // });
     // if (!todo.check) {
     //     todo.check = "checked";
     //     return todo.save();
     // }
     // todo.check = "unchecked";
     // return todo.save();
+
     if (!todo) {
         return res.status(400).json({
             success: false,
@@ -77,19 +110,18 @@ todoRouter.patch("/:id([0-9a-f]{24})/check", auth, async (req, res) => {
 });
 
 todoRouter.delete("/:id([0-9a-f]{24})", auth, async (req, res) => {
-    let todo;
     const id = req.params.id;
-
-    todo = await Todo.findByIdAndDelete(id);
-
-    if (!todo)
-        return res.status(400).json({
+    try {
+        todo = await Todo.findByIdAndDelete(id);
+        return res.status(200).json({
+            success: true,
+            todo,
+        });
+    } catch (error) {
+        return res.status(500).json({
             success: false,
         });
-    return res.status(200).json({
-        success: true,
-        todo: todo,
-    });
+    }
 });
 
 module.exports = todoRouter;

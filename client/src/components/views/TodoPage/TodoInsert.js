@@ -1,12 +1,16 @@
-import React, { useState, useCallback, useEffect } from "react";
-import axios from "axios";
+import React, { useState } from "react";
 
-function TodoInsert() {
-    const [value, setValue] = useState("");
+function TodoInsert({ onRegister }) {
+    const [todoThing, setTodoThing] = useState("");
 
-    const onChange = useCallback((e) => {
-        setValue(e.target.value);
-    }, []);
+    const onChange = (event) => {
+        const todoThing = event.target.value;
+        setTodoThing(todoThing);
+    };
+
+    const handleRegister = () => {
+        onRegister(todoThing);
+    };
 
     // const [todos, setTodos] = useState(null);
 
@@ -23,10 +27,16 @@ function TodoInsert() {
     // }, []);
 
     return (
-        <form className="TodoInsert">
-            <input placeholder="할 일을 입력하세요" value={value} onChange={onChange} />
-            <button type="submit">제출</button>
-        </form>
+        <div
+            style={{
+                display: "flex",
+                flexDirection: "row",
+            }}>
+            <div>
+                <input placeholder="할 일을 입력하세요" value={todoThing} onChange={onChange} />
+            </div>
+            <button onClick={handleRegister}>제출</button>
+        </div>
     );
 }
 

@@ -11,9 +11,9 @@ const todoSchema = mongoose.Schema({
         default: Date.now,
     },
     check: {
-        type: String,
+        type: Boolean,
         required: true,
-        default: "unchecked",
+        default: false,
     },
     userId: {
         type: mongoose.Schema.Types.ObjectId,

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { withRouter, Link } from "react-router-dom";
 import TodoList from "./TodoList";
+import TodoInsert from "./TodoInsert";
 
 function TodoPage() {
     const [todos, setTodos] = useState(null);
@@ -10,10 +10,9 @@ function TodoPage() {
         setLoading(true);
         try {
             const response = await axios.get("/api/todos");
-            console.log(response.data.todos);
             setTodos(response.data.todos);
-        } catch (e) {
-            console.log(e);
+        } catch (error) {
+            console.log(error);
         }
         setLoading(false);
     };
@@ -21,23 +20,49 @@ function TodoPage() {
         getTodos();
     }, []);
 
-    const [value, setValue] = useState("");
-    const onChange = (event) => {
-        const { value } = event.target;
-        setValue(value);
-    };
-    const onSubmit = async (event) => {
-        event.preventDefault();
+    const onRegister = async (todoThing) => {
         const payload = {
-            todoThing: value,
+            todoThing: todoThing,
         };
+        try {
+            const response = await axios.post("/api/todos", payload);
+            if (response.data.success) {
+                alert("데이터 저장에 성공했습니다.");
+                setTodos(todos.concat(response.data.todo));
+            } else {
+                alert("실패");
+            }
+        } catch (error) {
+            alert("저장에 실패!");
+            console.log(error);
+        }
+    };
 
-        const response = await axios.post("/api/todos", payload);
-        if (response.data.success) {
-            alert("데이터 저장에 성공했습니다.");
-            getTodos();
-        } else {
-            alert("실패");
+    const onDelete = async (id) => {
+        try {
+            const response = await axios.delete(`/api/todos/${id}`);
+            if (response.data.success) {
+                setTodos(todos.filter((contact) => contact._id !== id));
+                alert("할 일이 삭제 되었습니다.");
+            } else {
+                alert("연락처 삭제 실패");
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
+    const onToggle = async (id, check) => {
+        try {
+            const response = await axios.patch(`/api/todos/${id}/check`, {
+                check,
+            });
+            if (response.data.success) {
+                const newTodo = response.data.todo;
+                setTodos(todos.map((todo) => (todo._id === id ? newTodo : todo)));
+            }
+        } catch (error) {
+            console.log(error);
         }
     };
 
@@ -45,7 +70,7 @@ function TodoPage() {
         return <form>대기 중...</form>;
     }
     if (!todos) {
-        return null;
+        return <div>저장된 할 일이 없습니다.</div>;
     }
 
     return (
@@ -59,19 +84,17 @@ function TodoPage() {
                 height: "100vh",
             }}>
             <h1>ToDo List</h1>
-            <form className="TodoInsert" onSubmit={onSubmit}>
-                <input placeholder="할 일을 입력하세요" value={value} onChange={onChange} />
-                <button type="submit">제출</button>
-            </form>
+            <TodoInsert onRegister={onRegister} />
             <div>
-                <TodoList todos={todos} onRefresh={getTodos} />
-                {/* <input type="text" placeholder={todo.todoThing} /> */}
+                {todos.map((todo) => (
+                    <TodoList key={todo._id} todo={todo} onDelete={onDelete} onToggle={onToggle} />
+                ))}
             </div>
         </div>
     );
 }
 
-export default withRouter(TodoPage);
+export default TodoPage;
 
 /*
 

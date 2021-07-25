@@ -15,7 +15,7 @@ contactRouter.get("/", auth, async (req, res) => {
         }
         return res.status(200).json({
             success: true,
-            contacts: contacts,
+            contacts,
         });
     } catch (error) {
         return res.status(500).json({
@@ -50,10 +50,14 @@ contactRouter.patch("/:id([0-9a-f]{24})", auth, async (req, res) => {
     try {
         const id = req.params.id;
         const { phoneNumber, name } = req.body;
-        const contact = await Contact.findByIdAndUpdate(id, {
-            name,
-            phoneNumber,
-        });
+        const contact = await Contact.findByIdAndUpdate(
+            id,
+            {
+                name,
+                phoneNumber,
+            },
+            { new: true }
+        );
         return res.status(200).json({
             success: true,
             contact,

@@ -1,31 +1,37 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
-import TodoListItem from "./TodoListItem";
 
-function TodoList({ todos, onRefresh }) {
-    const onDelete = async (id) => {
-        const response = await axios.delete(`/api/todos/${id}`);
-        if (response.data.success) {
-            alert("성공");
-            onRefresh();
-        }
+function TodoList({ todo, onDelete, onToggle }) {
+    const [todoThing, setTodoThing] = useState("");
+    const [check, setCheck] = useState(false);
+
+    const onChange = (event) => {
+        const todoThing = event.target.value;
+        setTodoThing(todoThing);
+    };
+    const onCheckChange = (event) => {
+        const check = event.target.checked;
+        // setCheck(check);
+        onToggle(todo._id, check);
     };
 
+    const handleDelete = () => {
+        onDelete(todo._id);
+    };
+
+    useEffect(() => {
+        setTodoThing(todo.todoThing);
+        setCheck(todo.check);
+    }, [todo]);
+
     return (
-        <div>
-            {todos.map((todo) => (
-                <div
-                    key={todo._id}
-                    style={{
-                        display: "flex",
-                    }}>
-                    {todo._id}
-                    <input type="checkBox" />
-                    <input type="text" placeholder={todo.todoThing} />
-                    <button onClick={() => onDelete(todo._id)}>❌</button>
-                    <button>🖊</button>
-                </div>
-            ))}
+        <div
+            style={{
+                display: "flex",
+            }}>
+            <input type="checkBox" name="checkBox" checked={check} onChange={onCheckChange} />
+            <input type="text" value={todoThing} onChange={onChange} />
+            <button onClick={handleDelete}>❌</button>
+            <button>🖊</button>
         </div>
     );
 }

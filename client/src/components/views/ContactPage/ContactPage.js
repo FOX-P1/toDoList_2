@@ -20,8 +20,6 @@ function ContactPage() {
         getContacts();
     }, []);
 
-    console.log(contacts);
-
     const onRegister = async (name, phoneNumber) => {
         const payload = {
             name: name,
@@ -44,8 +42,9 @@ function ContactPage() {
 
     const onDelete = async (id) => {
         const response = await axios.delete(`/api/contacts/${id}`);
+        console.log(response.data.contact);
         if (response.data.success) {
-            setContacts(contacts.filter((contact) => contact._id != id));
+            setContacts(contacts.filter((contact) => contact._id !== id));
             alert("연락처가 삭제 되었습니다.");
         } else {
             alert("연락처 삭제 실패!");
@@ -60,25 +59,8 @@ function ContactPage() {
         console.log(payload);
         const response = await axios.patch(`/api/contacts/${id}`, payload);
         if (response.data.success) {
-            setContacts(
-                contacts.map((contact) =>
-                    contact._id === id
-                        ? { ...contact, name: name, phoneNumber: phoneNumber }
-                        : contact
-                )
-            );
-            // const contactIndex = contacts.indexOf(contacts.filter((contact) => contact._id == id));
-            // console.log(contactIndex);
-            // const deleteBeforeContact = contacts.filter((contact) => contact._id !== { id });
-
-            // console.log("delete", deleteBeforeContact);
-            // const updateContact = deleteBeforeContact.splice(
-            //     contactIndex,
-            //     0,
-            //     response.data.contact
-            // );
-            // setContacts(updateContact);
-            //기존에 id의 index값을 구한 후 그 항목을 제거한 후 그자리에 새로이 만들어진 항목을 넣어야한다.
+            const newContact = response.data.todo;
+            setContacts(contacts.map((contact) => (contact._id === id ? newContact : contact)));
             alert("연락처가 수정 되었습니다.");
         } else {
             alert("연락처 수정 실패!");

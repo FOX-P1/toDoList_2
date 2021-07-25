@@ -1,13 +1,14 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 function ContactItem({ contact, onDelete, onUpdate }) {
     // console.log(props.contact);
-    const [name, setName] = useState(contact.name);
-    const [phoneNumber, setPhoneNumber] = useState(contact.phoneNumber);
+    const [name, setName] = useState("");
+    const [phoneNumber, setPhoneNumber] = useState("");
     // const { contact } = props;
     const onChangePhoneNumber = (event) => {
         const phoneNumber = event.target.value;
-        setPhoneNumber(phoneNumber);
+        // setPhoneNumber(phoneNumber);
+        onUpdate;
     };
     const onChangeName = (event) => {
         const name = event.target.value;
@@ -20,7 +21,13 @@ function ContactItem({ contact, onDelete, onUpdate }) {
     const handleDelete = () => {
         onDelete(contact._id);
     };
-
+    /*
+         useEffect 를 이용해 contact 가 변경 될 때 render  한다. 
+    */
+    useEffect(() => {
+        setName(contact.name);
+        setPhoneNumber(contact.phoneNumber);
+    }, [contact]);
     return (
         <div
             style={{
