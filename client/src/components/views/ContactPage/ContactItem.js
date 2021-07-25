@@ -1,43 +1,40 @@
-import axios from "axios";
 import React, { useState } from "react";
 
-function ContactItem({ contact, onDelete }) {
+function ContactItem({ contact, onDelete, onUpdate }) {
     // console.log(props.contact);
-
+    const [name, setName] = useState(contact.name);
+    const [phoneNumber, setPhoneNumber] = useState(contact.phoneNumber);
     // const { contact } = props;
+    const onChangePhoneNumber = (event) => {
+        const phoneNumber = event.target.value;
+        setPhoneNumber(phoneNumber);
+    };
+    const onChangeName = (event) => {
+        const name = event.target.value;
+        setName(name);
+    };
+
+    const handleUpdate = () => {
+        onUpdate(contact._id, name, phoneNumber);
+    };
+    const handleDelete = () => {
+        onDelete(contact._id);
+    };
+
     return (
         <div
-            // key={contact._id}
             style={{
                 display: "flex",
                 justifyContent: "space-between",
             }}>
-            <form
-                style={{
-                    display: "flex",
-                    flexDirection: "row",
-                }}>
-                <div>
-                    <input type="text" placeholder={contact.name} />
-                    {/* <input
-                        type="text"
-                        placeholder={contact.name}
-                        defaultValue={name}
-                        onChange={onChangeName}
-                    /> */}
-                </div>
-                <div>
-                    <input type="text" placeholder={contact.phoneNumber} />
-                    {/* <input
-                        type="INT"
-                        placeholder={contact.phoneNumber}
-                        defaultValue={phoneNumber}
-                        onChange={onChangePhoneNumber}
-                    /> */}
-                </div>
-                <button type="submit">수정</button>
-            </form>
-            <button onClick={() => onDelete(contact._id)}>삭제</button>
+            <div>
+                <input type="text" value={name} onChange={onChangeName} />
+            </div>
+            <div>
+                <input type="text" value={phoneNumber} onChange={onChangePhoneNumber} />
+            </div>
+            <button onClick={handleUpdate}>수정</button>
+            <button onClick={handleDelete}>삭제</button>
         </div>
     );
 }

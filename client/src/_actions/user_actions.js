@@ -21,11 +21,14 @@ export function registerUser(dataToSubmit) {
     };
 }
 
-export function auth() {
-    const request = axios.get("/api/users/auth").then((response) => response.data);
-
-    return {
-        type: AUTH_USER,
-        payload: request,
-    };
+export async function auth() {
+    try {
+        const request = await axios.get("/api/users/auth");
+        return {
+            type: AUTH_USER,
+            payload: request.data,
+        };
+    } catch (error) {
+        return false;
+    }
 }

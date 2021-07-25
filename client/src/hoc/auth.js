@@ -12,6 +12,9 @@ export default function foo(SpecificComponent, option, adminRoute = null) {
         useEffect(() => {
             dispatch(auth()).then((response) => {
                 //로그인 하지 않은 상태
+                if (!response) {
+                    alert("에러가 발생했습니다.");
+                }
                 if (!response.payload.isAuth) {
                     if (option) {
                         props.history.push("/login");

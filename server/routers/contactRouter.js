@@ -6,69 +6,78 @@ const contactRouter = express.Router();
 
 contactRouter.get("/", auth, async (req, res) => {
     const userId = req.user._id;
-    const contacts = await Contact.find({ userId });
-    if (!contacts) {
-        return res.status(404).json({
+    try {
+        const contacts = await Contact.find({ userId });
+        if (!contacts) {
+            return res.status(404).json({
+                success: false,
+            });
+        }
+        return res.status(200).json({
+            success: true,
+            contacts: contacts,
+        });
+    } catch (error) {
+        return res.status(500).json({
             success: false,
+            message: "DB Server에 접속할 수 없습니다.",
         });
     }
-    return res.status(200).json({
-        success: true,
-        contacts: contacts,
-    });
 });
 
 contactRouter.post("/", auth, async (req, res) => {
     const userId = req.user._id;
     const { phoneNumber, name } = req.body;
     try {
-        const newContact = await Contact.create({
+        const contact = await Contact.create({
             name,
             phoneNumber,
             userId,
         });
+        return res.status(200).json({
+            success: true,
+            contact,
+        });
     } catch (error) {
-        return res.status(400).json({
+        return res.status(500).json({
             success: false,
             message: "업로드에 실패하였습니다.",
         });
     }
-    return res.status(200).json({
-        success: true,
-    });
 });
 
 contactRouter.patch("/:id([0-9a-f]{24})", auth, async (req, res) => {
-    const id = req.params.id;
-    const contact = await Contact.findByIdAndUpdate(id, {
-        name: req.body.name,
-        phoneNumber: req.body.phoneNumber,
-    });
-    if (!name && !phoneNumber) {
-        return res.status(400).json({
+    try {
+        const id = req.params.id;
+        const { phoneNumber, name } = req.body;
+        const contact = await Contact.findByIdAndUpdate(id, {
+            name,
+            phoneNumber,
+        });
+        return res.status(200).json({
+            success: true,
+            contact,
+        });
+    } catch (error) {
+        return res.status(500).json({
             success: false,
         });
     }
-    return res.status(200).json({
-        success: true,
-        contact: contact,
-    });
 });
 
 contactRouter.delete("/:id([0-9a-f]{24})", auth, async (req, res) => {
-    let contact;
     const id = req.params.id;
-
-    contact = await Contact.findByIdAndDelete(id);
-
-    if (!contact)
-        return res.status(400).json({
+    try {
+        const contact = await Contact.findByIdAndDelete(id);
+        return res.status(200).json({
+            success: true,
+            contact,
+        });
+    } catch (error) {
+        return res.status(500).json({
             success: false,
         });
-    return res.status(200).json({
-        success: true,
-        contact: contact,
-    });
+    }
 });
 
 module.exports = contactRouter;

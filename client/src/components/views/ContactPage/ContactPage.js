@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import ContactItem from "./ContactItem";
+import ContactInsert from "./ContactInsert";
 
 function ContactPage() {
     const [contacts, setContacts] = useState(null);
@@ -19,49 +20,68 @@ function ContactPage() {
         getContacts();
     }, []);
 
-    const [phoneNumber, setPhoneNumber] = useState("");
-    const [name, setName] = useState("");
+    console.log(contacts);
 
-    const onNewPhoneNumber = (event) => {
-        const phoneNumber = event.target.value;
-        setPhoneNumber(phoneNumber);
-    };
-    const onNewName = (event) => {
-        const name = event.target.value;
-        setName(name);
-    };
-
-    const onChangePhoneNumber = (event) => {
-        const phoneNumber = event.target.value;
-        setPhoneNumber(phoneNumber);
-    };
-    const onChangeName = (event) => {
-        const name = event.target.value;
-        setName(name);
-    };
-
-    const onSubmit = async (event) => {
-        event.preventDefault();
+    const onRegister = async (name, phoneNumber) => {
         const payload = {
             name: name,
             phoneNumber: phoneNumber,
         };
-        const response = await axios.post("/api/contacts", payload);
-        if (response.data.success) {
-            alert("연락처 저장에 성공!");
-            getContacts();
-        } else {
-            alert("연락처 저장 실패!");
+        try {
+            const response = await axios.post("/api/contacts", payload);
+            if (response.data.success) {
+                console.log(response.data.contact);
+                setContacts(contacts.concat(response.data.contact));
+                alert("연락처 저장에 성공!");
+            } else {
+                alert("연락처 저장 실패!");
+            }
+        } catch (error) {
+            alert("저장에 실패하였습니다.");
+            console.log(error);
         }
     };
 
     const onDelete = async (id) => {
         const response = await axios.delete(`/api/contacts/${id}`);
         if (response.data.success) {
+            setContacts(contacts.filter((contact) => contact._id != id));
             alert("연락처가 삭제 되었습니다.");
-            getContacts();
         } else {
             alert("연락처 삭제 실패!");
+        }
+    };
+
+    const onUpdate = async (id, name, phoneNumber) => {
+        const payload = {
+            name,
+            phoneNumber,
+        };
+        console.log(payload);
+        const response = await axios.patch(`/api/contacts/${id}`, payload);
+        if (response.data.success) {
+            setContacts(
+                contacts.map((contact) =>
+                    contact._id === id
+                        ? { ...contact, name: name, phoneNumber: phoneNumber }
+                        : contact
+                )
+            );
+            // const contactIndex = contacts.indexOf(contacts.filter((contact) => contact._id == id));
+            // console.log(contactIndex);
+            // const deleteBeforeContact = contacts.filter((contact) => contact._id !== { id });
+
+            // console.log("delete", deleteBeforeContact);
+            // const updateContact = deleteBeforeContact.splice(
+            //     contactIndex,
+            //     0,
+            //     response.data.contact
+            // );
+            // setContacts(updateContact);
+            //기존에 id의 index값을 구한 후 그 항목을 제거한 후 그자리에 새로이 만들어진 항목을 넣어야한다.
+            alert("연락처가 수정 되었습니다.");
+        } else {
+            alert("연락처 수정 실패!");
         }
     };
 
@@ -83,27 +103,15 @@ function ContactPage() {
                 height: "100vh",
             }}>
             <h1>연락처</h1>
-            <form
-                onSubmit={onSubmit}
-                style={{
-                    display: "flex",
-                    flexDirection: "row",
-                }}>
-                <div>
-                    <input placeholder="이름" defaultValue={name} onChange={onNewName} />
-                </div>
-                <div>
-                    <input
-                        placeholder="전화번호"
-                        defaultValue={phoneNumber}
-                        onChange={onNewPhoneNumber}
-                    />
-                </div>
-                <button type="submit">저장</button>
-            </form>
+            <ContactInsert onRegister={onRegister} />
             <div>
                 {contacts.map((contact) => (
-                    <ContactItem key={contact._id} contact={contact} onDelete={onDelete} />
+                    <ContactItem
+                        key={contact._id}
+                        contact={contact}
+                        onDelete={onDelete}
+                        onUpdate={onUpdate}
+                    />
                 ))}
             </div>
         </div>
