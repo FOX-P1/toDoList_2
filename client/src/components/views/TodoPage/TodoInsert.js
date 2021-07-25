@@ -10,6 +10,7 @@ function TodoInsert({ onRegister }) {
 
     const handleRegister = () => {
         onRegister(todoThing);
+        setTodoThing("");
     };
 
     // const [todos, setTodos] = useState(null);

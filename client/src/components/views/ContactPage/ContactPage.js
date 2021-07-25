@@ -30,6 +30,7 @@ function ContactPage() {
             if (response.data.success) {
                 console.log(response.data.contact);
                 setContacts(contacts.concat(response.data.contact));
+
                 alert("연락처 저장에 성공!");
             } else {
                 alert("연락처 저장 실패!");
@@ -59,7 +60,7 @@ function ContactPage() {
         console.log(payload);
         const response = await axios.patch(`/api/contacts/${id}`, payload);
         if (response.data.success) {
-            const newContact = response.data.todo;
+            const newContact = response.data.contact;
             setContacts(contacts.map((contact) => (contact._id === id ? newContact : contact)));
             alert("연락처가 수정 되었습니다.");
         } else {

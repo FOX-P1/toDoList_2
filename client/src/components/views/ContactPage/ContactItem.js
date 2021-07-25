@@ -7,8 +7,8 @@ function ContactItem({ contact, onDelete, onUpdate }) {
     // const { contact } = props;
     const onChangePhoneNumber = (event) => {
         const phoneNumber = event.target.value;
-        // setPhoneNumber(phoneNumber);
-        onUpdate;
+        setPhoneNumber(phoneNumber);
+        // onUpdate;
     };
     const onChangeName = (event) => {
         const name = event.target.value;

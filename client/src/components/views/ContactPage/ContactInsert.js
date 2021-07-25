@@ -5,7 +5,7 @@ function ContactInsert({ onRegister }) {
     const [phoneNumber, setPhoneNumber] = useState("");
 
     const onNewPhoneNumber = (event) => {
-        const phoneNumber = event.target.value;
+        let phoneNumber = event.target.value;
         setPhoneNumber(phoneNumber);
     };
     const onNewName = (event) => {
@@ -14,6 +14,8 @@ function ContactInsert({ onRegister }) {
     };
     const handleRegister = () => {
         onRegister(name, phoneNumber);
+        setName("");
+        setPhoneNumber("");
     };
 
     return (
@@ -23,7 +25,7 @@ function ContactInsert({ onRegister }) {
                 flexDirection: "row",
             }}>
             <div>
-                <input placeholder="이름" defaultValue={name} onChange={onNewName} />
+                <input placeholder="이름" value={name} onChange={onNewName} />
             </div>
             <div>
                 <input placeholder="전화번호" value={phoneNumber} onChange={onNewPhoneNumber} />
