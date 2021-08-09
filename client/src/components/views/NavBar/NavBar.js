@@ -26,6 +26,9 @@ function NavBar(props) {
                     <Link to="/contact">연락처</Link>
                 </li>
                 <li>
+                    <Link to="/todo2">할 일 투</Link>
+                </li>
+                <li>
                     <button onClick={onClickHandler}>로그아웃</button>
                 </li>
             </ul>

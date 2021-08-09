@@ -9,6 +9,8 @@ import ContactPage from "./components/views/ContactPage/ContactPage";
 import Auth from "./hoc/auth";
 import NavBar from "./components/views/NavBar/NavBar";
 
+import TodosContainer from "./containers/TodosContainer";
+
 function App() {
     //     const history = useHistory();
     //     const onClickHandler = () => {
@@ -31,14 +33,28 @@ function App() {
             you have multiple routes, but you want   only one
             of them to render at a time
           */}
-                <Route exact path={["/", "/todo", "/contact"]} component={Auth(NavBar, true)} />
+                <Route
+                    exact
+                    path={["/", "/todo", "/contact", "/todo2"]}
+                    component={Auth(NavBar, true)}
+                />
 
                 <Switch>
                     <Route exact path="/" component={Auth(LandingPage, true)} />
                     <Route path="/login" component={Auth(LoginPage, false)} />
-                    <Route path="/register" component={Auth(RegisterPage, false)} />
+                    <Route
+                        path="/register"
+                        component={Auth(RegisterPage, false)}
+                    />
                     <Route path="/todo" component={Auth(TodoPage, true)} />
-                    <Route path="/contact" component={Auth(ContactPage, true)} />
+                    <Route
+                        path="/contact"
+                        component={Auth(ContactPage, true)}
+                    />
+                    <Route
+                        path="/todo2"
+                        component={Auth(TodosContainer, true)}
+                    />
                 </Switch>
             </div>
         </Router>
