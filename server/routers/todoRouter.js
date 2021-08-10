@@ -47,9 +47,14 @@ todoRouter.post("/", auth, async (req, res) => {
 
 todoRouter.patch("/:id([0-9a-f]{24})", auth, async (req, res) => {
     const id = req.params.id;
-    const todo = await Todo.findByIdAndUpdate(id, {
-        todoThing: req.body.todoThing,
-    });
+    const todo = await Todo.findByIdAndUpdate(
+        id,
+        {
+            todoThing: req.body.todoThing,
+        },
+        { new: true }
+    );
+    console.log("todo: ", todo);
     if (!todo) {
         return res.status(400).json({
             success: false,
@@ -99,14 +104,14 @@ todoRouter.patch("/:id([0-9a-f]{24})/check", auth, async (req, res) => {
     // todo.check = "unchecked";
     // return todo.save();
 
-    if (!todo) {
-        return res.status(400).json({
-            success: false,
-        });
-    }
-    return res.status(200).json({
-        success: true,
-    });
+    // if (!todo) {
+    //     return res.status(400).json({
+    //         success: false,
+    //     });
+    // }
+    // return res.status(200).json({
+    //     success: true,
+    // });
 });
 
 todoRouter.delete("/:id([0-9a-f]{24})", auth, async (req, res) => {

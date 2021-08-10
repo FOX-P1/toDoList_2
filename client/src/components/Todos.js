@@ -1,21 +1,39 @@
 import React from "react";
 
-const TodoItem = ({ todo, onToggle, onRemove }) => {
+const TodoItem = ({
+    todo,
+    onToggle,
+    onRemove,
+    onRevise,
+    onChangeTodoThing,
+}) => {
+    const handleChange = (e) => {
+        console.log("id: ", todo._id);
+        onChangeTodoThing(todo._id, e.target.value);
+    };
+    // function onChange(e) {
+
+    // }
     return (
         <div>
             <input
                 type="checkbox"
                 onClick={() => onToggle(todo._id, todo.check)}
-                check={todo.check}
+                checked={todo.check}
                 readOnly={true}
             />
-            <span
+            <input
+                type="text"
                 style={{
                     textDecoration: todo.check ? "line-through" : "none",
-                }}>
-                {todo.todoThing}
-            </span>
+                }}
+                value={todo.todoThing}
+                onChange={handleChange}
+            />
             <button onClick={() => onRemove(todo._id)}>삭제</button>
+            <button onClick={() => onRevise(todo._id, todo.todoThing)}>
+                수정
+            </button>
         </div>
     );
 };
@@ -24,10 +42,12 @@ const Todos = ({
     loadingTodos,
     input,
     todos,
+    onChangeTodoThing,
     onChangeInput,
     onInsert,
     onToggle,
     onRemove,
+    onRevise,
 }) => {
     const onSubmit = (e) => {
         e.preventDefault();
@@ -59,6 +79,8 @@ const Todos = ({
                                     key={todo._id}
                                     onToggle={onToggle}
                                     onRemove={onRemove}
+                                    onRevise={onRevise}
+                                    onChangeTodoThing={onChangeTodoThing}
                                 />
                             ))}
                         </div>

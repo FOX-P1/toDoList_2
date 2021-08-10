@@ -6,6 +6,8 @@ import {
     insert,
     toggle,
     remove,
+    changeTodoThing,
+    revise,
 } from "../modules/todos";
 import Todos from "../components/Todos";
 
@@ -18,6 +20,8 @@ const TodosContainer = ({
     insert,
     toggle,
     remove,
+    changeTodoThing,
+    revise,
 }) => {
     useEffect(() => {
         getTodos();
@@ -31,6 +35,8 @@ const TodosContainer = ({
             onInsert={insert}
             onToggle={toggle}
             onRemove={remove}
+            onChangeTodoThing={changeTodoThing}
+            onRevise={revise}
         />
     );
 };
@@ -47,5 +53,7 @@ export default connect(
         insert,
         toggle,
         remove,
+        changeTodoThing,
+        revise,
     }
 )(TodosContainer);

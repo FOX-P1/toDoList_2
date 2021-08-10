@@ -10,12 +10,12 @@ import promiseMiddleware from "redux-promise";
 import ReduxThunk from "redux-thunk";
 // import Reducer from "./_reducers";
 import rootReducer from "./modules";
-import logger from "redux-logger";
+// import logger from "redux-logger";
 
 const createStoreWithMiddleware = applyMiddleware(
     promiseMiddleware,
-    ReduxThunk,
-    logger
+    ReduxThunk
+    // logger
 )(createStore);
 
 ReactDOM.render(

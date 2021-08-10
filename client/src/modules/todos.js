@@ -2,7 +2,8 @@ import { handleActions } from "redux-actions";
 import axios from "axios";
 
 const CHANGE_INPUT = "todos/CHANGE_INPUT";
-const REMOVE = "todos/REMOVE";
+
+const CHANGE_TODOTHING = "todos/CHANGE_TODOTHING";
 
 export const getTodosData = () => axios.get(`/api/todos`);
 
@@ -19,6 +20,16 @@ const INSERT_FAILURE = "todos/INSERT_FAILURE";
 const TOGGLE = "todos/TOGGLE";
 const TOGGLE_SUCCESS = "todos/TOGGLE_SUCCESS";
 const TOGGLE_FAILURE = "todos/TOGGLE_FAILURE";
+
+const REMOVE = "todos/REMOVE";
+const REMOVE_SUCCESS = "todos/REMOVE_SUCCESS";
+const REMOVE_FAILURE = "todos/REMOVE_FAILURE";
+
+const REVISE = "todos/REVISE";
+const REVISE_SUCCESS = "todos/REVISE_SUCCESS";
+const REVISE_FAILURE = "todos/REVISE_FAILURE";
+
+/* ------------------------------------------------------------------------------------------ */
 
 export const getTodos = () => async (dispatch) => {
     dispatch({ type: GET_TODOS });
@@ -57,16 +68,12 @@ export const insert = (todoThing) => async (dispatch) => {
         });
         throw e;
     }
-    // todo: {
-    //     todoThing,
-    //     check: false,
-    // },
 };
 
 export const toggle = (id, check) => async (dispatch) => {
     const payload = {
         id: id,
-        check: check,
+        check: !check,
     };
     dispatch({ type: TOGGLE });
     try {
@@ -75,18 +82,79 @@ export const toggle = (id, check) => async (dispatch) => {
             type: TOGGLE_SUCCESS,
             payload: response.data.todo,
         });
-    } catch (e) {}
+    } catch (e) {
+        dispatch({
+            type: TOGGLE_FAILURE,
+            payload: e,
+            error: true,
+        });
+        throw e;
+    }
 };
 
-export const remove = (id) => ({
-    type: REMOVE,
-    id,
-});
+export const remove = (id) => async (dispatch) => {
+    const payload = {
+        id: id,
+    };
+    console.log("payload: ", payload);
+    dispatch({ type: REMOVE });
+    try {
+        const response = await axios.delete(`/api/todos/${id}`, payload);
+        dispatch({
+            type: REMOVE_SUCCESS,
+            payload: response.data.todo,
+        });
+    } catch (e) {
+        dispatch({
+            type: REMOVE_FAILURE,
+            payload: e,
+            error: true,
+        });
+        throw e;
+    }
+};
 
-export const changeInput = (input) => ({
-    type: CHANGE_INPUT,
-    input,
-});
+export const revise = (id, todoThing) => async (dispatch) => {
+    const payload = {
+        id: id,
+        todoThing: todoThing,
+    };
+    console.log("payload: ", payload);
+    dispatch({ type: REVISE });
+    try {
+        const response = await axios.patch(`/api/todos/${id}`, payload);
+        dispatch({
+            type: REVISE_SUCCESS,
+            payload: response.data.todo,
+        });
+        console.log("response.data: ", response.data);
+    } catch (e) {
+        dispatch({
+            type: REVISE_FAILURE,
+            payload: e,
+            error: true,
+        });
+        throw e;
+    }
+};
+
+export const changeInput = (input) => {
+    return {
+        type: CHANGE_INPUT,
+        input,
+    };
+};
+
+export const changeTodoThing = (id, todoThing) => {
+    console.log("id2: ", id);
+    return {
+        type: CHANGE_TODOTHING,
+        id,
+        todoThing,
+    };
+};
+
+/* ------------------------------------------------------------------------------------------ */
 
 const initialState = {
     input: "",
@@ -94,17 +162,9 @@ const initialState = {
         GET_TODOS: false,
     },
     todos: null,
-    // todos: [
-    //     {
-    //         id: 1,
-    //         text: "리덕스 기초",
-    //     },
-    //     {
-    //         id: 2,
-    //         text: "리액트와 리덕스 사용하기",
-    //     },
-    // ],
 };
+
+/* ------------------------------------------------------------------------------------------ */
 
 const todos = handleActions(
     {
@@ -115,7 +175,6 @@ const todos = handleActions(
                 GET_TODOS: true,
             },
         }),
-
         [GET_TODOS_SUCCESS]: (state, action) => ({
             ...state,
             loading: {
@@ -131,15 +190,12 @@ const todos = handleActions(
                 GET_TODOS: false,
             },
         }),
-        [CHANGE_INPUT]: (state, action) => ({
-            ...state,
-            input: action.input,
-        }),
+
         [INSERT]: (state) => ({
             ...state,
             loading: {
                 ...state.loading,
-                POST_TODOS: true,
+                INSERT: true,
             },
         }),
         [INSERT_SUCCESS]: (state, action) => ({
@@ -157,39 +213,105 @@ const todos = handleActions(
                 INSERT: false,
             },
         }),
+
+        [TOGGLE]: (state) => ({
+            ...state,
+            loading: {
+                ...state.loading,
+                TOGGLE: true,
+            },
+        }),
+        [TOGGLE_SUCCESS]: (state, action) => ({
+            ...state,
+            loading: {
+                ...state.loading,
+                TOGGLE: false,
+            },
+            todos: state.todos.map((todo) =>
+                todo._id === action.payload._id ? action.payload : todo
+            ),
+        }),
+        [TOGGLE_FAILURE]: (state, action) => ({
+            ...state,
+            loading: {
+                ...state.loading,
+                TOGGLE: false,
+            },
+        }),
+
+        [REMOVE]: (state) => ({
+            ...state,
+            loading: {
+                ...state.loading,
+                REMOVE: true,
+            },
+        }),
+        [REMOVE_SUCCESS]: (state, action) => ({
+            ...state,
+            loading: {
+                ...state.loading,
+                REMOVE: false,
+            },
+            todos: state.todos.filter(
+                (todo) => todo._id !== action.payload._id
+            ),
+        }),
+        [REMOVE_FAILURE]: (state, action) => ({
+            ...state,
+            loading: {
+                ...state.loading,
+                REMOVE: false,
+            },
+        }),
+
+        [REVISE]: (state) => ({
+            ...state,
+            loading: {
+                ...state.loading,
+                REVISE: true,
+            },
+        }),
+        [REVISE_SUCCESS]: (state, action) => ({
+            ...state,
+            loading: {
+                ...state.loading,
+                REVISE: false,
+            },
+            todos: state.todos.map((todo) =>
+                todo._id === action.payload._id ? action.payload : todo
+            ),
+        }),
+        [REVISE_FAILURE]: (state, action) => ({
+            ...state,
+            loading: {
+                ...state.loading,
+                REVISE: false,
+            },
+        }),
+
+        [CHANGE_INPUT]: (state, action) => {
+            return {
+                ...state,
+                input: action.input,
+            };
+        },
+
+        [CHANGE_TODOTHING]: (state, action) => {
+            console.log("id3: ", action);
+            return {
+                ...state,
+                todos: state.todos.map((todo) =>
+                    todo._id === action.id
+                        ? {
+                              ...todo,
+                              todoThing: action.todoThing,
+                          }
+                        : todo
+                ),
+            };
+        },
     },
     initialState
 );
-
-// function todos(state = initialState, action) {
-//     switch (action.type) {
-//         case CHANGE_INPUT:
-//             return {
-//                 ...state,
-//                 input: action.input,
-//             };
-//         case INSERT:
-//             return {
-//                 ...state,
-//                 todos: state.todos.concat(action.todo),
-//             };
-//         case TOGGLE:
-//             return {
-//                 ...state,
-//                 todos: state.todos.map((todo) =>
-//                     todo.id === action.id
-//                         ? { ...todo, check: !todo.check }
-//                         : todo
-//                 ),
-//             };
-//         case REMOVE:
-//             return {
-//                 ...state,
-//                 todos: state.todos.filter((todo) => todo.id !== action.id),
-//             };
-//         default:
-//             return state;
-//     }
-// }
 
 export default todos;
